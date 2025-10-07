@@ -436,6 +436,7 @@ class AXNode {
       case 'textbox':
       case 'tree':
       case 'treeitem':
+      case 'option':
         return true;
       default:
         return false;

@@ -1210,9 +1210,24 @@ export abstract class ElementHandle<
       await handle.#intersectBoundingBoxesWithFrame(boxes);
       frame = parentFrame;
     }
-    const box = boxes.find(box => {
+    // 渐进式降级查找策略
+    // 策略1: 优先查找 >= 1px 的盒子（保持现有行为）
+    let box = boxes.find(box => {
       return box.width >= 1 && box.height >= 1;
     });
+
+    // 策略2: 降级到任何有尺寸的盒子
+    if (!box) {
+      box = boxes.find(box => {
+        return box.width > 0 || box.height > 0;
+      });
+    }
+
+    // 策略3: 接受 0x0 盒子（支持完全无尺寸的元素）
+    if (!box && boxes.length > 0) {
+      box = boxes[0];
+    }
+
     if (!box) {
       return null;
     }

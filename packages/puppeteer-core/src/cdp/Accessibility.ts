@@ -76,6 +76,11 @@ export interface SerializedAXNode {
    */
   invalid?: string;
   orientation?: string;
+
+  /**
+   * Url for link elements.
+   */
+  url?: string;
   /**
    * Children of this node, if there are any.
    */
@@ -461,10 +466,30 @@ class AXNode {
     }
   }
 
+  public isLandmark(): boolean {
+    switch (this.#role) {
+      case 'banner':
+      case 'complementary':
+      case 'contentinfo':
+      case 'form':
+      case 'main':
+      case 'navigation':
+      case 'region':
+      case 'search':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public isInteresting(insideControl: boolean): boolean {
     const role = this.#role;
     if (role === 'Ignored' || this.#hidden || this.#ignored) {
       return false;
+    }
+
+    if (this.isLandmark()) {
+      return true;
     }
 
     if (this.#focusable || this.#richlyEditable) {
@@ -523,7 +548,8 @@ class AXNode {
       | 'description'
       | 'keyshortcuts'
       | 'roledescription'
-      | 'valuetext';
+      | 'valuetext'
+      | 'url';
 
     const userStringProperties: UserStringProperty[] = [
       'name',
@@ -532,6 +558,7 @@ class AXNode {
       'keyshortcuts',
       'roledescription',
       'valuetext',
+      'url',
     ];
     const getUserStringPropertyValue = (key: UserStringProperty): string => {
       return properties.get(key) as string;

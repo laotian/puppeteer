@@ -1,5 +1,45 @@
 # Changelog
 
+## [24.26.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.26.0...puppeteer-core-v24.26.1) (2025-10-22)
+
+
+### 🛠️ Fixes
+
+* **a11y:** expose the url property for links ([#14357](https://github.com/puppeteer/puppeteer/issues/14357)) ([93d098b](https://github.com/puppeteer/puppeteer/commit/93d098b060771dbd1e6875f4664273604022f3bd))
+* roll to Chrome 141.0.7390.122 ([#14360](https://github.com/puppeteer/puppeteer/issues/14360)) ([f2fef81](https://github.com/puppeteer/puppeteer/commit/f2fef816f234bd30a13bb86dfc654f29f5cb2f6b))
+
+## [24.26.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.25.0...puppeteer-core-v24.26.0) (2025-10-21)
+
+
+### 🎉 Features
+
+* consider landmarks interesting for a11y ([#14330](https://github.com/puppeteer/puppeteer/issues/14330)) ([894eb7c](https://github.com/puppeteer/puppeteer/commit/894eb7cfe47d1cc8df6b1c3a3dc712ee862ff8d6))
+* **webdriver:** get detailed initiator data from CDP if available ([#14348](https://github.com/puppeteer/puppeteer/issues/14348)) ([d997064](https://github.com/puppeteer/puppeteer/commit/d9970645d866bd76a2fc7bb9f58197d006b2b7b4))
+* **webdriver:** support `fetchPostData`  ([#14340](https://github.com/puppeteer/puppeteer/issues/14340)) ([ebe76d3](https://github.com/puppeteer/puppeteer/commit/ebe76d3f0c0dc2392f453331224afa41cfc78a70))
+
+
+### 🛠️ Fixes
+
+* request.headers() should not allow mutating data ([#14341](https://github.com/puppeteer/puppeteer/issues/14341)) ([9de5bd7](https://github.com/puppeteer/puppeteer/commit/9de5bd79d48e66ebc0f62bf5f29c218c58865877))
+* use the correct type for `pageerror` event ([#14349](https://github.com/puppeteer/puppeteer/issues/14349)) ([e654b58](https://github.com/puppeteer/puppeteer/commit/e654b58a3c6209b41bcdc13ad6a820d5673a5b79))
+
+
+### 📄 Documentation
+
+* mark `HTTPRequest.postData` as deprecated ([#14336](https://github.com/puppeteer/puppeteer/issues/14336)) ([3812c50](https://github.com/puppeteer/puppeteer/commit/3812c50bd8d1682360486ac04e8df59e17aa2431))
+
+## [24.25.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.24.1...puppeteer-core-v24.25.0) (2025-10-15)
+
+
+### Features
+
+* roll to Firefox 144.0 ([#14322](https://github.com/puppeteer/puppeteer/issues/14322)) ([9d1ad07](https://github.com/puppeteer/puppeteer/commit/9d1ad0754fe075fc6f01ef0df9f0a5ca6a0c2431))
+
+
+### Bug Fixes
+
+* roll to Chrome 141.0.7390.78 ([#14321](https://github.com/puppeteer/puppeteer/issues/14321)) ([064145c](https://github.com/puppeteer/puppeteer/commit/064145c9735917fa0b54b404550ae0ced3a22af5))
+
 ## [24.24.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v24.24.0...puppeteer-core-v24.24.1) (2025-10-13)
 
 

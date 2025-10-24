@@ -133,6 +133,22 @@ describe('request interception', function () {
       expect(requests[1]!.url()).toContain('/one-style.css');
       expect(requests[1]!.headers()['referer']).toContain('/one-style.html');
     });
+    it('should not allow mutating request headers', async () => {
+      const {page, server} = await getTestState();
+
+      await page.setRequestInterception(true);
+      const requests: HTTPRequest[] = [];
+      page.on('request', request => {
+        if (!isFavicon(request)) {
+          requests.push(request);
+        }
+        const headers = request.headers();
+        headers['test'] = 'test';
+        void request.continue({headers});
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(Object.keys(requests[0]!.headers())).not.toContain('test');
+    });
     it('should work with requests without networkId', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
@@ -604,7 +620,9 @@ describe('request interception', function () {
         void request.continue();
       });
       await page.goto(
-        pathToFileURL(path.join(__dirname, '../assets', 'one-style.html')),
+        pathToFileURL(
+          path.join(import.meta.dirname, '../assets', 'one-style.html'),
+        ),
       );
       expect(urls.size).toBe(2);
       expect(urls.has('one-style.html')).toBe(true);
@@ -921,7 +939,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const imageBuffer = fs.readFileSync(
-          path.join(__dirname, '../assets', 'pptr.png'),
+          path.join(import.meta.dirname, '../assets', 'pptr.png'),
         );
         void request.respond({
           contentType: 'image/png',

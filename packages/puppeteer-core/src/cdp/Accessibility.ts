@@ -512,6 +512,18 @@ class AXNode {
   public serialize(): SerializedAXNode {
     const properties = new Map<string, number | string | boolean>();
     for (const property of this.payload.properties || []) {
+      // ignore img src="data:xx" or a href="https://LONG_URL"
+      if (property.name.toLowerCase() === 'url') {
+        if (property.value.value?.startsWith('data:')) {
+          continue;
+        } else if (property.value.value?.length > 100) {
+          properties.set(
+            property.name.toLowerCase(),
+            property.value.value.substring(0, 100) + '...',
+          );
+          continue;
+        }
+      }
       properties.set(property.name.toLowerCase(), property.value.value);
     }
     if (this.payload.name) {

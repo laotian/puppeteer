@@ -26,10 +26,13 @@
         {
           "type": "generic",
           "path": "src/util/version.ts"
+        },
+        {
+          "type": "generic",
+          "path": "Herebyfile.mjs"
         }
       ]
     },
-    "packages/testserver": {},
     "packages/ng-schematics": {
       "bump-minor-pre-major": true,
       "separate-pull-requests": true

@@ -111,22 +111,30 @@ defaultBrowserOptions.args!.push(
 );
 defaultBrowserOptions.args!.push(`--force-device-scale-factor=1`);
 
-if (defaultBrowserOptions.executablePath) {
-  console.warn(
-    `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`,
-  );
-  if (!fs.existsSync(defaultBrowserOptions.executablePath)) {
-    throw new Error(
-      `Browser executable not found at ${defaultBrowserOptions.executablePath}`,
-    );
+let executableExists = false;
+function verifyExecutable() {
+  if (executableExists) {
+    return;
   }
-} else {
-  const executablePath = puppeteer.executablePath();
-  if (!fs.existsSync(executablePath)) {
-    throw new Error(
-      `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`,
+
+  if (defaultBrowserOptions.executablePath) {
+    console.warn(
+      `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`,
     );
+    if (!fs.existsSync(defaultBrowserOptions.executablePath)) {
+      throw new Error(
+        `Browser executable not found at ${defaultBrowserOptions.executablePath}`,
+      );
+    }
+  } else {
+    const executablePath = puppeteer.executablePath();
+    if (!fs.existsSync(executablePath)) {
+      throw new Error(
+        `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`,
+      );
+    }
   }
+  executableExists = true;
 }
 
 const processVariables: {
@@ -152,38 +160,49 @@ const setupServer = async () => {
   const cachedPath = path.join(import.meta.dirname, '../assets', 'cached');
 
   const server = await TestServer.create(assetsPath);
-  const port = server.port;
   server.enableHTTPCache(cachedPath);
-  server.PORT = port;
-  server.PREFIX = `http://localhost:${port}`;
-  server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
-  server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
 
   const httpsServer = await TestServer.createHTTPS(assetsPath);
-  const httpsPort = httpsServer.port;
   httpsServer.enableHTTPCache(cachedPath);
-  httpsServer.PORT = httpsPort;
-  httpsServer.PREFIX = `https://localhost:${httpsPort}`;
-  httpsServer.CROSS_PROCESS_PREFIX = `https://127.0.0.1:${httpsPort}`;
-  httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
 
   return {server, httpsServer};
 };
 
+/**
+ * Adjusts Mocha.Context timeout and returns launch params with timeouts set.
+ */
+function adjustBrowserLaunchTimeout(context: Mocha.Context): {
+  timeout: number;
+  protocolTimeout: number;
+} {
+  let defaultTimeout = context.timeout() || 10_000;
+  if (isFirefox) {
+    defaultTimeout += 5_000;
+  }
+  // Let mocha fail after the 1s of timeout.
+  context.timeout(defaultTimeout + 1_000);
+  return {
+    timeout: defaultTimeout,
+    // Commands should fail before Mocha timeouts
+    protocolTimeout: defaultTimeout - 1_000,
+  };
+}
+
 let browserPromise: Promise<Browser> | null = null;
 export const setupTestBrowserHooks = (): void => {
   before(async function () {
+    const {timeout, protocolTimeout} = adjustBrowserLaunchTimeout(this);
     const defaultTimeout = this.timeout() || 10_000;
     // Let mocha fail after the 1s of timeout.
     this.timeout(defaultTimeout + 1_000);
+    verifyExecutable();
     try {
       if (!state.browser) {
         if (!browserPromise) {
           browserPromise = (puppeteer as unknown as PuppeteerNode).launch({
             ...processVariables.defaultBrowserOptions,
-            timeout: defaultTimeout,
-            // Commands should fail before Mocha timeouts
-            protocolTimeout: defaultTimeout / 2,
+            timeout,
+            protocolTimeout,
           });
         }
 
@@ -233,11 +252,19 @@ export const setupSeparateTestBrowserHooks = (
   const {createContext = true, createPage = true} = options;
 
   const state: Awaited<ReturnType<typeof launch>> = {} as any;
-  before(async () => {
-    const browserState = await launch(launchOptions, {
-      after: 'all',
-      ...options,
-    });
+  before(async function () {
+    const {timeout, protocolTimeout} = adjustBrowserLaunchTimeout(this);
+    const browserState = await launch(
+      {
+        timeout,
+        protocolTimeout,
+        ...launchOptions,
+      },
+      {
+        after: 'all',
+        ...options,
+      },
+    );
     // Trick to keep the correct reference
     const props = Object.entries(browserState).reduce((acc, entries) => {
       const [key, value] = entries;
@@ -371,40 +398,28 @@ const browserNotClosedError = new Error(
 
 export const mochaHooks: Mocha.RootHookObject = {
   async beforeAll(this: Mocha.Context): Promise<void> {
-    async function setUpDefaultState() {
-      const {server, httpsServer} = await setupServer();
+    const {server, httpsServer} = await setupServer();
 
-      state.puppeteer = puppeteer as unknown as PuppeteerNode;
-      state.server = server;
-      state.httpsServer = httpsServer;
-      state.isFirefox = processVariables.isFirefox;
-      state.isChrome = processVariables.isChrome;
-      state.isHeadless = processVariables.isHeadless;
-      state.headless = processVariables.headless;
-      state.puppeteerPath = path.resolve(
-        path.join(
-          import.meta.dirname,
-          '..',
-          '..',
-          'packages',
-          'puppeteer',
-          'lib',
-          'esm',
-          'puppeteer',
-          'puppeteer.js',
-        ),
-      );
-    }
-
-    try {
-      await Deferred.race([
-        setUpDefaultState(),
-        Deferred.create({
-          message: `Failed in after Hook`,
-          timeout: this.timeout() - 1000,
-        }),
-      ]);
-    } catch {}
+    state.puppeteer = puppeteer as unknown as PuppeteerNode;
+    state.server = server;
+    state.httpsServer = httpsServer;
+    state.isFirefox = processVariables.isFirefox;
+    state.isChrome = processVariables.isChrome;
+    state.isHeadless = processVariables.isHeadless;
+    state.headless = processVariables.headless;
+    state.puppeteerPath = path.resolve(
+      path.join(
+        import.meta.dirname,
+        '..',
+        '..',
+        'packages',
+        'puppeteer',
+        'lib',
+        'esm',
+        'puppeteer',
+        'puppeteer.js',
+      ),
+    );
   },
 
   async afterAll(this: Mocha.Context): Promise<void> {

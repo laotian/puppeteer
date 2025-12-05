@@ -14,6 +14,20 @@
     "comment": "Chrome-only feature blocked on https://github.com/GoogleChromeLabs/chromium-bidi/issues/2082"
   },
   {
+    "testIdPattern": "[bluetooth-emulation.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Headless shell does not support Bluetooth Emulation"
+  },
+  {
+    "testIdPattern": "[bluetooth-emulation.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox does not support Web Bluetooth"
+  },
+  {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not hang when there is a debugger statement",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
@@ -229,6 +243,40 @@
     "parameters": ["chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[bluetooth-emulation.spec] request prompt for emulated bluetooth device can be canceled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.add|removeScreen should add and remove a screen",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.add|removeScreen should add and remove a screen",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful"],
+    "expectations": ["FAIL"],
+    "comment": "Not testable in headful"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.screens should return default screen info",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.screens should return default screen info",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful"],
+    "expectations": ["FAIL"],
+    "comment": "Not testable in headful"
   },
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession *",
@@ -552,6 +600,41 @@
     "comment": "With BiDi we get only text and not a serializable value for console messages"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
+    "platforms": ["darwin"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "Returns a different window size in Chrome headless shell on Mac"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful"],
+    "expectations": ["FAIL"],
+    "comment": "Not testable in headful"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.reload should enable or disable the cache based on reload params",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Not yet supported https://bugzilla.mozilla.org/show_bug.cgi?id=1851561"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -648,6 +731,13 @@
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://github.com/w3c/webdriver-bidi/issues/508"
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with worker",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Workers do not work in Firefox yet"
   },
   {
     "testIdPattern": "[screencast.spec] Screencasts Page.screencast should validate options",
@@ -754,6 +844,13 @@
     "comment": "CDP-specific"
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.add|removeScreen should add and remove a screen",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["FAIL"],
+    "comment": "Different dimensions on Windows in Chrome Headless"
+  },
+  {
     "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -843,20 +940,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"],
     "comment": "Chromium-specific test. The test relies on the cookie in secure context to be secure. This is not the case for Firefox."
-  },
-  {
-    "testIdPattern": "[device-request-prompt.spec] device request prompt can be aborted",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[device-request-prompt.spec] device request prompt does not crash",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
@@ -951,13 +1034,6 @@
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[emulation.spec] Emulation Page.viewport should support landscape emulation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
@@ -1307,6 +1383,15 @@
     "comment": "network.getData(request) is not yet supported"
   },
   {
+    "testIdPattern": "[network.spec] network Request.headers cookie header should show Cookie header for redirect",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"],
+    "comment": [
+      "Test is flaky for MacOS BiDi as event order is we don't repopulate the request data from the response."
+    ]
+  },
+  {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1417,6 +1502,13 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["FAIL"],
+    "comment": "Returns a different window size in Chrome Headless on Mac"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",

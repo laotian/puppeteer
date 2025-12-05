@@ -31,6 +31,56 @@ import {
 describe('Page', function () {
   setupTestBrowserHooks();
 
+  describe('Page.newPage', function () {
+    it('should open pages in a new window', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+    });
+    it('should open pages in a new window at the specified position', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: {left: 50, top: 50, width: 750, height: 550},
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+
+      const outerSize = await page.evaluate(async () => {
+        return {width: outerWidth, height: outerHeight};
+      });
+
+      expect(outerSize.width).toBe(750);
+      expect(outerSize.height).toBe(550);
+    });
+    it('should open pages in a new window in maximized state', async () => {
+      const {context, browser} = await getTestState();
+
+      const page = await context.newPage({
+        type: 'window',
+        windowBounds: {windowState: 'maximized'},
+      });
+
+      expect(await context.pages()).toContain(page);
+      expect(await browser.pages()).toContain(page);
+
+      const outerSize = await page.evaluate(async () => {
+        return {width: outerWidth, height: outerHeight};
+      });
+
+      // Should match default headless screen size 800x600.
+      expect(outerSize.width).toBe(800);
+      expect(outerSize.height).toBe(600);
+    });
+  });
+
   describe('Page.close', function () {
     it('should reject all promises when page is closed', async () => {
       const {context} = await getTestState();
@@ -2298,6 +2348,28 @@ describe('Page', function () {
           });
         }),
       ).toBe(42);
+    });
+  });
+
+  describe('Page.reload', function () {
+    it('should enable or disable the cache based on reload params', async () => {
+      const {page, server} = await getTestState();
+
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      const [cachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload(),
+      ]);
+      // Rely on "if-modified-since" caching in our test server.
+      expect(cachedRequest.headers['if-modified-since']).not.toBe(undefined);
+
+      const [nonCachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload({
+          ignoreCache: true,
+        }),
+      ]);
+      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
     });
   });
 

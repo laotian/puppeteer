@@ -144,7 +144,7 @@ describe('request interception', function () {
         }
         const headers = request.headers();
         headers['test'] = 'test';
-        void request.continue({headers});
+        void request.continue({headers: request.headers()});
       });
       await page.goto(server.EMPTY_PAGE);
       expect(Object.keys(requests[0]!.headers())).not.toContain('test');
@@ -704,6 +704,16 @@ describe('request interception', function () {
       });
       await page.goto(server.PREFIX + '/cached/one-style-font.html');
       await responsePromise;
+    });
+    it('should work with worker', async () => {
+      const {page, server} = await getTestState();
+
+      await Promise.all([
+        waitEvent(page, 'workercreated'),
+        page.goto(server.PREFIX + '/worker/worker.html'),
+      ]);
+
+      await page.setRequestInterception(true);
     });
   });
 

@@ -79,15 +79,13 @@ describe('DevTools', function () {
       handleDevToolsAsPage: true,
     });
     const devtoolsPageTarget = await browser.waitForTarget(target => {
-      return target.type() === 'other';
+      return target.type() === 'other' && target.url().startsWith('devtools');
     });
     const page = (await devtoolsPageTarget.page())!;
-    expect(
-      await page.evaluate(() => {
-        // @ts-expect-error devtools context.
-        return Boolean(window.DevToolsAPI);
-      }),
-    ).toBe(true);
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
     expect(await browser.pages()).toContain(page);
   });
 
@@ -101,12 +99,11 @@ describe('DevTools', function () {
       return target.type() === 'other' && target.url().startsWith('devtools');
     });
     const page = (await devtoolsPageTarget.page())!;
-    expect(
-      await page.evaluate(() => {
-        // @ts-expect-error devtools context.
-        return Boolean(window.DevToolsAPI);
-      }),
-    ).toBe(true);
+
+    await page.waitForFunction(() => {
+      // @ts-expect-error devtools context.
+      return Boolean(window.DevToolsAPI);
+    });
     expect(await browser.pages()).toContain(page);
   });
 
@@ -137,6 +134,7 @@ describe('DevTools', function () {
     ]);
     await browser.close();
   });
+
   it('should expose DevTools as a page', async () => {
     const browser = await launchBrowser(
       Object.assign({devtools: true}, launchOptions),
@@ -150,6 +148,18 @@ describe('DevTools', function () {
     ]);
     const page = await target.page();
     await page!.waitForFunction(() => {
+      // @ts-expect-error wrong context.
+      return Boolean(window.DevToolsAPI);
+    });
+    await browser.close();
+  });
+
+  it('should support opening DevTools on a page', async () => {
+    const browser = await launchBrowser(launchOptions);
+    const page = await browser.newPage();
+    await page.goto('about:blank');
+    const devtoolsPage = await page.openDevTools();
+    await devtoolsPage!.waitForFunction(() => {
       // @ts-expect-error wrong context.
       return Boolean(window.DevToolsAPI);
     });

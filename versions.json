@@ -1,10 +1,52 @@
 {
-  "lastMaintainedChromeVersion": "138.0.7204.168",
+  "lastMaintainedChromeVersion": "140.0.7339.207",
   "versions": [
     [
-      "NEXT",
+      "v24.32.0",
+      {
+        "chrome": "143.0.7499.40",
+        "firefox": "stable_145.0.2"
+      }
+    ],
+    [
+      "v24.31.0",
+      {
+        "chrome": "142.0.7444.175",
+        "firefox": "stable_145.0.1"
+      }
+    ],
+    [
+      "v24.30.0",
+      {
+        "chrome": "142.0.7444.162",
+        "firefox": "stable_145.0"
+      }
+    ],
+    [
+      "v24.29.1",
+      {
+        "chrome": "142.0.7444.61",
+        "firefox": "stable_144.0.2"
+      }
+    ],
+    [
+      "v24.27.0",
+      {
+        "chrome": "142.0.7444.59",
+        "firefox": "stable_144.0.2"
+      }
+    ],
+    [
+      "v24.26.1",
       {
         "chrome": "141.0.7390.122",
+        "firefox": "stable_144.0"
+      }
+    ],
+    [
+      "v24.25.0",
+      {
+        "chrome": "141.0.7390.78",
         "firefox": "stable_144.0"
       }
     ],
